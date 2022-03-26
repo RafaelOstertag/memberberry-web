@@ -88,7 +88,7 @@ fi
           def version = env.VERSION
           step([$class                 : "RundeckNotifier",
                 includeRundeckLogs     : true,
-                jobId                  : "f32a7d62-b42e-4fbb-83df-ccd51c98f810",
+                jobId                  : "8156a78b-2908-4a96-8a2d-1d071c1e92c5",
                 options                : "version=$version",
                 rundeckInstance        : "gizmo",
                 shouldFailTheBuild     : true,
