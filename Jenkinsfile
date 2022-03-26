@@ -37,7 +37,7 @@ pipeline {
 
     stage('verify version') {
       when {
-        branch "master"
+        branch "main"
         not {
           triggeredBy "TimerTrigger"
         }
@@ -60,7 +60,7 @@ fi
 
     stage('publish to repo') {
       when {
-        branch "master"
+        branch "main"
         not {
           triggeredBy "TimerTrigger"
         }
@@ -77,7 +77,7 @@ fi
 
     stage('deploy') {
       when {
-        branch "master"
+        branch "main"
         not {
           triggeredBy "TimerTrigger"
         }
