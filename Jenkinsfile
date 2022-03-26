@@ -7,6 +7,7 @@ pipeline {
     NEXUS = "https://colossus.kruemel.home/nexus/"
     REPOSITORY = "repository/memberberry-web-raw"
     VERSION = sh returnStdout: true, script: 'jq -r .version package.json | tr -d \'\\n\''
+    PACKAGENAME = "memberberry-web"
   }
 
   triggers {
@@ -46,7 +47,7 @@ pipeline {
       steps {
         withCredentials([usernameColonPassword(credentialsId: '4395eb59-c7bc-47b6-95c5-6795d8fb7f0b', variable: 'CREDENTIALS')]) {
           sh '''
-if curl -f -k -u "$CREDENTIALS" -I "${NEXUS}${REPOSITORY}/${VERSION}/meberberry-web-${VERSION}.tar.gz" >/dev/null
+if curl -f -k -u "$CREDENTIALS" -I "${NEXUS}${REPOSITORY}/${VERSION}/${PACKAGENAME}-${VERSION}.tar.gz" >/dev/null
 then
   echo "### Version ${VERSION} already exists in repository" >&2
   exit 1
@@ -67,10 +68,10 @@ fi
       }
 
       steps {
-        sh 'tar -C dist/meberberry-web -cvzf meberberry-web-${VERSION}.tar.gz .'
+        sh 'tar -C dist/${PACKAGENAME} -cvzf ${PACKAGENAME}-${VERSION}.tar.gz .'
 
         withCredentials([usernameColonPassword(credentialsId: '4395eb59-c7bc-47b6-95c5-6795d8fb7f0b', variable: 'CREDENTIALS')]) {
-          sh 'curl -k -u "$CREDENTIALS" --upload-file meberberry-web-${VERSION}.tar.gz "${NEXUS}${REPOSITORY}/${VERSION}/"'
+          sh 'curl -k -u "$CREDENTIALS" --upload-file ${PACKAGENAME}-${VERSION}.tar.gz "${NEXUS}${REPOSITORY}/${VERSION}/"'
         }
       }
     }
