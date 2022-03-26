@@ -4,14 +4,12 @@ pipeline {
   }
 
   environment {
-    // Used for tests, to make Jest running all tests without watcher
     NEXUS = "https://colossus.kruemel.home/nexus/"
     REPOSITORY = "repository/memberberry-web-raw"
     VERSION = sh returnStdout: true, script: 'jq -r .version package.json | tr -d \'\\n\''
   }
 
   triggers {
-    pollSCM '@hourly'
     cron '@daily'
   }
 
