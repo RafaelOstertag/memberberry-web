@@ -1,0 +1,33 @@
+<article class="mt-1">
+
+  <div class="mt-2 mb-2 form-check">
+    <input (change)="changeDisplayedState('')" [checked]="displayedState === undefined"
+           class="btn-check" id="any-state" name="state"
+           type="radio"><label
+    class="btn btn-outline-primary"
+    for="any-state">Any</label>
+    <input (change)="changeDisplayedState('open')" [checked]="displayedState === 'open'" class="btn-check"
+           id="open-state"
+           name="state" type="radio"><label
+    class="ms-1 btn btn-outline-primary"
+    for="open-state">Open</label>
+    <input (change)="changeDisplayedState('closed')" [checked]="displayedState === 'closed'" class="btn-check"
+           id="closed-state"
+           name="state" type="radio"><label
+    class="ms-1 btn btn-outline-primary"
+    for="closed-state">Closed</label>
+  </div>
+
+  <app-first-berry *ngIf="berries.length === 0"></app-first-berry>
+
+  <app-berry-summary (changed)="onBerryChanged()" *ngFor="let berry of berries"
+                     [berryWithId]="berry"></app-berry-summary>
+  <nav *ngIf="berries.length > 0">
+    <ngb-pagination (pageChange)="changePage($event)"
+                    [boundaryLinks]="true"
+                    [collectionSize]="totalEntries"
+                    [maxSize]="5"
+                    [pageSize]="pageSize"
+                    [page]="pageNumber" class="d-flex justify-content-center mt-1"></ngb-pagination>
+  </nav>
+</article>
