@@ -1,0 +1,43 @@
+<div class="container">
+  <h2>New Berry</h2>
+  <form #berryForm="ngForm" (ngSubmit)="onSubmit()">
+    <div class="mb-3">
+      <input [(ngModel)]="berry.title" class="form-control" id="title" name="title" placeholder="Berry Title" required
+             type="text">
+      <div class="form-text">Title of the Berry. Required.</div>
+    </div>
+    <div class="mb-3">
+      <label class="form-label" for="priority">Priority</label>
+      <select [(ngModel)]="berry.priority" class="form-select" id="priority" name="priority">
+        <option *ngFor="let priority of priorities" [selected]="priority == berry.priority"
+                [value]="priority">{{priority | titlecase}}</option>
+      </select>
+      <div class="form-text">Priority of the Berry.</div>
+    </div>
+    <div class="mb-3">
+      <textarea [(ngModel)]="berry.description" class="form-control" id="description" name="description"
+                placeholder="Berry Description"></textarea>
+      <div class="form-text">Description of the Berry. Optional.</div>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label" for="tags">Tags</label>
+      <select [(ngModel)]="berry.tags" class="form-select mb-1" id="tags" multiple name="tags">
+        <option *ngFor="let tag of availableTags"
+                [value]="tag">{{tag}}</option>
+      </select>
+      <div class="input-group mb-3">
+        <button (click)="addNewTag(newTag.value)" [disabled]="newTag.value === ''"
+                class="input-group-text btn btn-secondary bi bi-file-plus"
+                type="button"></button>
+        <input #newTag class="form-control" id="add-tag" name="add-tag" placeholder="Create new tag"
+               type="text">
+
+      </div>
+      <div class="form-text">Tags of the Berry.</div>
+    </div>
+
+    <div *ngIf="submitError" class="mb-2 text-danger">{{submitError}}</div>
+    <button [disabled]="!berryForm.form.valid" class="btn btn-primary" type="submit">Submit</button>
+  </form>
+</div>
