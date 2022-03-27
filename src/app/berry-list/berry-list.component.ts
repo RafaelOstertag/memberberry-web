@@ -1,5 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {
+  BerryPriority,
   BerryState,
   BerryV1Service,
   BerryWithId,
@@ -16,7 +17,11 @@ import {ActivatedRoute} from "@angular/router";
 })
 export class BerryListComponent implements OnInit {
   berries: Array<BerryWithId> = []
+  existingTags: Array<string> = []
   displayedState: BerryState | undefined = BerryState.Open
+  displayedPriority: BerryPriority | undefined = undefined;
+  displayedTag: string | undefined = undefined;
+
   firstPage: boolean = true
   lastPage: boolean = false
   // This starts at 1, but the API is zero based
@@ -29,7 +34,8 @@ export class BerryListComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.fetchBerries();
+    this.fetchBerries()
+    this.fetchTags()
   }
 
   changePage(pageNumber: number) {
@@ -42,7 +48,7 @@ export class BerryListComponent implements OnInit {
   }
 
   changeDisplayedState(state: string) {
-    if (state === undefined || state === "") {
+    if (state === undefined || state === "" || state === null) {
       this.displayedState = undefined
     } else if (state === "open") {
       this.displayedState = BerryState.Open
@@ -52,17 +58,45 @@ export class BerryListComponent implements OnInit {
     this.fetchBerries()
   }
 
+  changeDisplayedPriority(priority: string) {
+    if (priority === undefined || priority === "" || priority === null) {
+      this.displayedPriority = undefined
+    } else {
+      switch (priority) {
+        case "high":
+          this.displayedPriority = BerryPriority.High
+          break
+        case "medium":
+          this.displayedPriority = BerryPriority.Medium
+          break
+        case "low":
+          this.displayedPriority = BerryPriority.Low
+          break
+      }
+    }
+    this.fetchBerries()
+  }
+
+  changeDisplayedTag(tag: string) {
+    if (tag === undefined || tag === "" || tag === null) {
+      this.displayedTag = undefined
+    } else {
+      this.displayedTag = tag
+    }
+    this.fetchBerries()
+  }
+
   private fetchBerries() {
     const requestParameters = this.compileRequestParameters();
 
     this.berryV1Service.getBerries(requestParameters, "response")
       .subscribe({
-        next: (response: HttpResponse<Array<BerryWithId>>) => this.handleResponse(response),
+        next: (response: HttpResponse<Array<BerryWithId>>) => this.handleBerryResponse(response),
         error: (response: HttpErrorResponse) => this.handleError(response)
       })
   }
 
-  private handleResponse(response: HttpResponse<Array<BerryWithId>>): void {
+  private handleBerryResponse(response: HttpResponse<Array<BerryWithId>>): void {
     if (response.body) {
       this.berries = response.body
     }
@@ -82,9 +116,23 @@ export class BerryListComponent implements OnInit {
     const requestParameters: GetBerriesRequestParams = {
       pageSize: this.pageSize,
       pageIndex: this.pageNumber > 1 ? this.pageNumber - 1 : 0,
-      berryState: this.displayedState
+      berryState: this.displayedState,
+      berryPriority: this.displayedPriority,
+      berryTag: this.displayedTag
     }
 
     return requestParameters;
+  }
+
+  private fetchTags() {
+    this.berryV1Service.getAllTags("body")
+      .subscribe({
+        next: (body: Array<string>) => this.handleTagResponse(body),
+        error: (response: HttpErrorResponse) => this.handleError(response)
+      })
+  }
+
+  private handleTagResponse(body: Array<string>) {
+    this.existingTags = body
   }
 }

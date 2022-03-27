@@ -14,6 +14,7 @@ import {HttpClientModule} from "@angular/common/http";
 import {NewBerryComponent} from './new-berry/new-berry.component';
 import {FormsModule} from "@angular/forms";
 import {UpdateBerryComponent} from './update-berry/update-berry.component';
+import {AlphanumPipe} from './alphanum.pipe';
 
 function initializeKeycloak(keycloak: KeycloakService) {
   return () =>
@@ -39,6 +40,7 @@ function initializeKeycloak(keycloak: KeycloakService) {
     FirstBerryComponent,
     NewBerryComponent,
     UpdateBerryComponent,
+    AlphanumPipe,
   ],
   imports: [
     BrowserModule,
