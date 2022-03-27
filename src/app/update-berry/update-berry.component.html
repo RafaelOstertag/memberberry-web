@@ -3,6 +3,10 @@
     <button (click)="deleteBerry()" class="btn btn-danger" type="button"><i class="bi bi-trash"></i> <span
       *ngIf="deleteInitiated" class="ms-2">Click to confirm</span></button>
   </h2>
+  <div class="text-muted mb-1">
+    Created {{berry.created | date:'medium'}} <span
+    *ngIf="berry.updated">, Updated {{berry.updated | date:'medium'}}</span>
+  </div>
   <form #berryForm="ngForm" (ngSubmit)="onSubmit(berryForm)">
     <div class="mb-3">
       <input #title="ngModel" [ngModel]="berry.title" class="form-control" id="title" name="title"

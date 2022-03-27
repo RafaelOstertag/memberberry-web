@@ -1,22 +1,72 @@
 <article class="mt-1">
+  <ngb-accordion #acc="ngbAccordion" class="mb-2">
+    <ngb-panel title="Filters">
+      <ng-template ngbPanelContent>
+        <div>State</div>
+        <div class="mt-2 mb-2 form-check" id="stateFilters">
+          <input (change)="changeDisplayedState('')" [checked]="displayedState === undefined"
+                 class="btn-check" id="any-state" name="state"
+                 type="radio"><label
+          class="btn btn-outline-primary"
+          for="any-state">Any</label>
+          <input (change)="changeDisplayedState('open')" [checked]="displayedState === 'open'" class="btn-check"
+                 id="open-state"
+                 name="state" type="radio"><label
+          class="ms-1 btn btn-outline-primary"
+          for="open-state">Open</label>
+          <input (change)="changeDisplayedState('closed')" [checked]="displayedState === 'closed'" class="btn-check"
+                 id="closed-state"
+                 name="state" type="radio"><label
+          class="ms-1 btn btn-outline-primary"
+          for="closed-state">Closed</label>
+        </div>
 
-  <div class="mt-2 mb-2 form-check">
-    <input (change)="changeDisplayedState('')" [checked]="displayedState === undefined"
-           class="btn-check" id="any-state" name="state"
-           type="radio"><label
-    class="btn btn-outline-primary"
-    for="any-state">Any</label>
-    <input (change)="changeDisplayedState('open')" [checked]="displayedState === 'open'" class="btn-check"
-           id="open-state"
-           name="state" type="radio"><label
-    class="ms-1 btn btn-outline-primary"
-    for="open-state">Open</label>
-    <input (change)="changeDisplayedState('closed')" [checked]="displayedState === 'closed'" class="btn-check"
-           id="closed-state"
-           name="state" type="radio"><label
-    class="ms-1 btn btn-outline-primary"
-    for="closed-state">Closed</label>
-  </div>
+        <div>Priority</div>
+        <div class="mt-2 mb-2 form-check" id="priorityFilters">
+          <input (change)="changeDisplayedPriority('')" [checked]="displayedPriority === undefined"
+                 class="btn-check" id="any-priority" name="priority"
+                 type="radio"><label
+          class="btn btn-outline-primary"
+          for="any-priority">Any</label>
+          <input (change)="changeDisplayedPriority('high')" [checked]="displayedPriority === 'high'" class="btn-check"
+                 id="high-priority"
+                 name="priority" type="radio"><label
+          class="ms-1 btn btn-outline-primary"
+          for="high-priority">High</label>
+
+          <input (change)="changeDisplayedPriority('medium')" [checked]="displayedPriority === 'medium'"
+                 class="btn-check"
+                 id="medium-priority"
+                 name="priority" type="radio"><label
+          class="ms-1 btn btn-outline-primary"
+          for="medium-priority">Medium</label>
+
+          <input (change)="changeDisplayedPriority('low')" [checked]="displayedPriority === 'low'" class="btn-check"
+                 id="low-priority"
+                 name="priority" type="radio"><label
+          class="ms-1 btn btn-outline-primary"
+          for="low-priority">Low</label>
+        </div>
+
+        <div>Tag</div>
+        <div class="mt-2 mb-2 form-check" id="tagFilters">
+          <input (change)="changeDisplayedTag('')" [checked]="displayedTag === undefined"
+                 class="btn-check" id="any-tag" name="tag"
+                 type="radio"><label
+          class="btn btn-outline-primary"
+          for="any-tag">Any</label>
+          <span *ngFor="let tag of existingTags">
+            <input (change)="changeDisplayedTag(tag)" [checked]="displayedTag === tag"
+                   class="btn-check" id="{{tag | alphanum}}-tag" name="tag"
+                   type="radio"><label
+            class="ms-1 btn btn-outline-primary"
+            for="{{tag | alphanum}}-tag">{{tag}}</label>
+          </span>
+        </div>
+      </ng-template>
+    </ngb-panel>
+  </ngb-accordion>
+
 
   <app-first-berry *ngIf="berries.length === 0"></app-first-berry>
 

@@ -3,11 +3,13 @@
   <a [ngClass]="{'text-decoration-line-through' : berryWithId.state === 'closed'}"
      [routerLink]="['/update-berry', berryWithId.id]"
      class="fs-5"
-     href="#">{{berryWithId.title}}</a><span
-  [ngClass]="{'bg-danger': berryWithId.priority === 'high', 'bg-dark': berryWithId.priority==='medium', 'bg-light': berryWithId.priority==='low'}"
-  class="badge rounded-pill small fw-normal ms-3">{{berryWithId.priority}}</span>
+     href="#">{{berryWithId.title}}</a>
+  <em *ngIf="berryWithId.priority !== 'medium'"
+      [ngClass]="{'bg-danger bi-arrow-up': berryWithId.priority === 'high', 'bg-secondary bi-arrow-down': berryWithId.priority==='low'}"
+      class="badge rounded-pill ms-1 align-text-top bi"><span
+    class="visually-hidden">{{berryWithId.priority}}</span></em>
   <br><span class="text-muted fw-light">{{berryWithId.created | date:'medium'}}</span>
   <span *ngFor="let tag of berryWithId.tags; first as isFirst" [ngClass]="{'ms-2': isFirst}"
-        class="badge rounded-pill small fw-normal me-1 bg-info">{{tag}}</span>
-
+        class="badge rounded-pill small fw-normal me-1 bg-info align-middle">{{tag}}</span>
+  <hr>
 </div>
