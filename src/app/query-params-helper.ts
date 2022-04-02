@@ -3,6 +3,8 @@ import {ParamMap} from "@angular/router";
 
 const defaultPageSize: number = 10
 const initialPageIndex: number = 0
+const defaultOrderBy: 'title' = 'title'
+const defaultOrder: 'ascending' = 'ascending'
 
 export function defaultGetBerriesRequestParams(): GetBerriesRequestParams {
   return {
@@ -10,7 +12,9 @@ export function defaultGetBerriesRequestParams(): GetBerriesRequestParams {
     pageIndex: initialPageIndex,
     berryState: BerryState.Open,
     berryPriority: undefined,
-    berryTag: undefined
+    berryTag: undefined,
+    berryOrderBy: defaultOrderBy,
+    berryOrder: defaultOrder,
   }
 }
 
@@ -20,7 +24,7 @@ export function extractGetBerriesRequestParamsFromParamsMap(paramMap: ParamMap):
     berryOrder: stringToBerryOrder(paramMap.get("berryOrder")),
     berryOrderBy: stringToBerryOrderBy(paramMap.get("berryOrderBy")),
     berryPriority: stringToBerryPriority(paramMap.get("berryPriority")),
-    berryState: stringToBerryState(paramMap.get("berryState")) || BerryState.Open,
+    berryState: stringToBerryState(paramMap.get("berryState")),
     berryTag: stringToBerryTag(paramMap.get("berryTag")),
     pageIndex: paramMap.get('pageIndex') != null ? parseInt(paramMap.get("pageIndex")!) : initialPageIndex,
     pageSize: paramMap.get('pageSize') != null ? parseInt(paramMap.get("pageSize")!) : defaultPageSize,
@@ -33,12 +37,12 @@ export function stringToBerryOrder(order: string | null | undefined): 'ascending
     case undefined:
     case null:
     case "":
-      return undefined;
+      return defaultOrder;
     case "descending":
     case "ascending":
       return order
     default:
-      return undefined
+      return defaultOrder
   }
 }
 
@@ -47,14 +51,14 @@ export function stringToBerryOrderBy(orderBy: string | null | undefined): 'creat
     case undefined:
     case null:
     case "":
-      return undefined;
+      return defaultOrderBy;
     case 'created':
     case 'title':
     case 'priority':
     case 'state':
       return orderBy
     default:
-      return undefined
+      return defaultOrderBy
   }
 }
 
