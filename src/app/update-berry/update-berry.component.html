@@ -1,5 +1,8 @@
 <div *ngIf="berryWithId$ | async as berry" class="container">
-  <h2>Update Berry
+  <h2>
+    <button (click)="goBack()" class="btn btn-secondary"><i class="bi bi-arrow-left-circle me-1"></i></button>
+
+    Update Berry
     <button (click)="deleteBerry()" class="btn btn-danger" type="button"><i class="bi bi-trash"></i> <span
       *ngIf="deleteInitiated" class="ms-2">Click to confirm</span></button>
   </h2>

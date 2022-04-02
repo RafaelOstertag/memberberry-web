@@ -1,5 +1,11 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {Berry, BerryV1Service, BerryWithId, UpdateBerryRequestParams} from "@memberberry-npm/memberberry-api-angular";
+import {
+  Berry,
+  BerryV1Service,
+  BerryWithId,
+  GetBerriesRequestParams,
+  UpdateBerryRequestParams
+} from "@memberberry-npm/memberberry-api-angular";
 
 @Component({
   selector: 'app-berry-summary',
@@ -8,6 +14,7 @@ import {Berry, BerryV1Service, BerryWithId, UpdateBerryRequestParams} from "@mem
 })
 export class BerrySummaryComponent implements OnInit {
   @Input() berryWithId!: BerryWithId
+  @Input() getBerryRequestParams: GetBerriesRequestParams | undefined = undefined
 
   @Output() changed = new EventEmitter<any>()
 
@@ -19,7 +26,7 @@ export class BerrySummaryComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    
+
   }
 
   flipState() {
