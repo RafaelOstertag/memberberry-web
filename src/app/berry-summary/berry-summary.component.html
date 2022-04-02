@@ -1,7 +1,7 @@
 <div class="mt-3">
   <input (change)="flipState()" [checked]="isBerryClosed" class="me-2" type="checkbox">
   <a [ngClass]="{'text-decoration-line-through' : berryWithId.state === 'closed'}"
-     [routerLink]="['/update-berry', berryWithId.id]"
+     [routerLink]="['/update-berry', berryWithId.id, getBerryRequestParams]"
      class="fs-5"
      href="#">{{berryWithId.title}}</a>
   <em *ngIf="berryWithId.priority !== 'medium'"

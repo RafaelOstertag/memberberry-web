@@ -7,6 +7,7 @@ import {
   BerryV1Service,
   BerryWithId,
   DeleteBerryRequestParams,
+  GetBerriesRequestParams,
   GetBerryRequestParams,
   UpdateBerryRequestParams
 } from "@memberberry-npm/memberberry-api-angular";
@@ -15,6 +16,7 @@ import {HttpErrorResponse, HttpResponse} from "@angular/common/http";
 import {NgForm} from "@angular/forms";
 import {prioritiesList} from "../priorities-list";
 import {stateList} from "../state-list";
+import {extractGetBerriesRequestParamsFromParamsMap} from "../query-params-helper";
 
 @Component({
   selector: 'app-update-berry',
@@ -27,6 +29,7 @@ export class UpdateBerryComponent implements OnInit {
   berryId: string | null = null
   submitError: string | undefined = undefined
   deleteInitiated: boolean = false
+  getBerriesRequestParam: GetBerriesRequestParams = {}
 
   constructor(private readonly route: ActivatedRoute, private readonly router: Router, private readonly berryV1Service: BerryV1Service) {
   }
@@ -46,6 +49,8 @@ export class UpdateBerryComponent implements OnInit {
         const requestParameter: GetBerryRequestParams = {
           berryId: this.berryId!
         }
+
+        this.getBerriesRequestParam = extractGetBerriesRequestParamsFromParamsMap(params)
         return this.berryV1Service.getBerry(requestParameter, "body")
       }))
     this.berryV1Service.getAllTags("body").subscribe({
@@ -85,7 +90,7 @@ export class UpdateBerryComponent implements OnInit {
       berryId: this.berryId!
     }
     this.berryV1Service.deleteBerry(requestParams).subscribe(() => {
-      this.router.navigate(["berries"])
+      this.goBack()
     })
   }
 
@@ -93,10 +98,14 @@ export class UpdateBerryComponent implements OnInit {
     this.availableTags.add(value)
   }
 
+  goBack() {
+    this.router.navigate(["berries", this.getBerriesRequestParam])
+  }
+
   private handleResponse(response: HttpResponse<any>) {
     if (response.status === 204) {
       this.submitError = undefined
-      this.router.navigate(["berries"])
+      this.goBack()
     } else {
       this.submitError = "Error updating Berry (Http Status: " + response.status + ")"
     }

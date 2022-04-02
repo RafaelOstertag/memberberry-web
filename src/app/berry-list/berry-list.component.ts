@@ -1,14 +1,16 @@
 import {Component, OnInit} from '@angular/core';
-import {
-  BerryPriority,
-  BerryState,
-  BerryV1Service,
-  BerryWithId,
-  GetBerriesRequestParams
-} from "@memberberry-npm/memberberry-api-angular";
+import {BerryV1Service, BerryWithId, GetBerriesRequestParams} from "@memberberry-npm/memberberry-api-angular";
 import {HttpErrorResponse, HttpResponse} from "@angular/common/http";
 import {ApiHeaders} from "../api-headers";
-import {ActivatedRoute} from "@angular/router";
+import {ActivatedRoute, ParamMap} from "@angular/router";
+import {
+  defaultGetBerriesRequestParams,
+  extractGetBerriesRequestParamsFromParamsMap,
+  stringToBerryOrderBy,
+  stringToBerryPriority,
+  stringToBerryState,
+  stringToBerryTag
+} from "../query-params-helper";
 
 @Component({
   selector: 'app-berry-list',
@@ -18,28 +20,32 @@ import {ActivatedRoute} from "@angular/router";
 export class BerryListComponent implements OnInit {
   berries: Array<BerryWithId> = []
   existingTags: Array<string> = []
-  displayedState: BerryState | undefined = BerryState.Open
-  displayedPriority: BerryPriority | undefined = undefined;
-  displayedTag: string | undefined = undefined;
+  getBerriesRequestParams: GetBerriesRequestParams
 
   firstPage: boolean = true
   lastPage: boolean = false
-  // This starts at 1, but the API is zero based
-  pageNumber: number = 1
-  pageSize: number = 25
   totalPages: number = 0
   totalEntries: number = 0
+  // We keep this separate, since it's easier to translate to page index which is zero based. Having one
+  // property for the nbp-pagination and the request would not work easily
+  selectedPage: number = 0
 
   constructor(private readonly berryV1Service: BerryV1Service, private readonly route: ActivatedRoute) {
+    this.getBerriesRequestParams = defaultGetBerriesRequestParams()
   }
 
   ngOnInit(): void {
-    this.fetchBerries()
-    this.fetchTags()
+    this.route.paramMap
+      .subscribe((params: ParamMap) => {
+        this.getBerriesRequestParams = extractGetBerriesRequestParamsFromParamsMap(params)
+        this.selectedPage = this.getBerriesRequestParams.pageIndex ? this.getBerriesRequestParams.pageIndex + 1 : 1
+        this.fetchBerries()
+        this.fetchTags()
+      })
   }
 
   changePage(pageNumber: number) {
-    this.pageNumber = pageNumber
+    this.selectedPage = pageNumber
     this.fetchBerries()
   }
 
@@ -48,48 +54,41 @@ export class BerryListComponent implements OnInit {
   }
 
   changeDisplayedState(state: string) {
-    if (state === undefined || state === "" || state === null) {
-      this.displayedState = undefined
-    } else if (state === "open") {
-      this.displayedState = BerryState.Open
-    } else {
-      this.displayedState = BerryState.Closed
-    }
+    this.getBerriesRequestParams.berryState = stringToBerryState(state)
+    this.selectedPage = 1
     this.fetchBerries()
   }
 
   changeDisplayedPriority(priority: string) {
-    if (priority === undefined || priority === "" || priority === null) {
-      this.displayedPriority = undefined
-    } else {
-      switch (priority) {
-        case "high":
-          this.displayedPriority = BerryPriority.High
-          break
-        case "medium":
-          this.displayedPriority = BerryPriority.Medium
-          break
-        case "low":
-          this.displayedPriority = BerryPriority.Low
-          break
-      }
-    }
+    this.getBerriesRequestParams.berryPriority = stringToBerryPriority(priority)
+    this.selectedPage = 1
     this.fetchBerries()
   }
 
   changeDisplayedTag(tag: string) {
-    if (tag === undefined || tag === "" || tag === null) {
-      this.displayedTag = undefined
+    this.getBerriesRequestParams.berryTag = stringToBerryTag(tag)
+    this.selectedPage = 1
+    this.fetchBerries()
+  }
+
+  changeOrderBy(fieldName: string) {
+    this.getBerriesRequestParams.berryOrderBy = stringToBerryOrderBy(fieldName)
+    this.fetchBerries()
+  }
+
+  changeAscending(checked: boolean) {
+    if (checked) {
+      this.getBerriesRequestParams.berryOrder = 'ascending'
     } else {
-      this.displayedTag = tag
+      this.getBerriesRequestParams.berryOrder = 'descending'
     }
+
     this.fetchBerries()
   }
 
   private fetchBerries() {
-    const requestParameters = this.compileRequestParameters();
-
-    this.berryV1Service.getBerries(requestParameters, "response")
+    this.getBerriesRequestParams.pageIndex = this.selectedPage > 1 ? this.selectedPage - 1 : 0
+    this.berryV1Service.getBerries(this.getBerriesRequestParams, "response")
       .subscribe({
         next: (response: HttpResponse<Array<BerryWithId>>) => this.handleBerryResponse(response),
         error: (response: HttpErrorResponse) => this.handleError(response)
@@ -101,27 +100,18 @@ export class BerryListComponent implements OnInit {
       this.berries = response.body
     }
     this.totalPages = parseInt(response.headers.get(ApiHeaders.TOTAL_PAGES) ?? "0")
-    this.pageNumber = parseInt(response.headers.get(ApiHeaders.PAGE_INDEX) ?? "0") + 1
-    this.pageSize = parseInt(response.headers.get(ApiHeaders.PAGE_SIZE) ?? "25")
+    this.getBerriesRequestParams.pageIndex = parseInt(response.headers.get(ApiHeaders.PAGE_INDEX) ?? "0")
+    this.getBerriesRequestParams.pageSize = parseInt(response.headers.get(ApiHeaders.PAGE_SIZE) ?? "25")
     this.lastPage = (response.headers.get(ApiHeaders.LAST_PAGE) ?? "false") === "true"
     this.firstPage = (response.headers.get(ApiHeaders.FIRST_PAGE) ?? "false") === "true"
     this.totalEntries = parseInt((response.headers.get(ApiHeaders.TOTAL_ENTRIES) ?? "0"))
   }
 
   private handleError(response: HttpErrorResponse): void {
-
-  }
-
-  private compileRequestParameters() {
-    const requestParameters: GetBerriesRequestParams = {
-      pageSize: this.pageSize,
-      pageIndex: this.pageNumber > 1 ? this.pageNumber - 1 : 0,
-      berryState: this.displayedState,
-      berryPriority: this.displayedPriority,
-      berryTag: this.displayedTag
+    if (response.status === 404 && this.selectedPage > 1) {
+      this.selectedPage--
+      this.fetchBerries()
     }
-
-    return requestParameters;
   }
 
   private fetchTags() {
