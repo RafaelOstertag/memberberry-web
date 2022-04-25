@@ -1,9 +1,9 @@
 version: 2.1
 
-only-master: &onlymaster
+only-main: &onlymain
   branches:
     only:
-      - master
+      - main
 
 orbs:
   c: rafaelostertag/common-orb@1.17.0
@@ -67,19 +67,19 @@ workflows:
                 paths:
                   - dist
       - check-version:
-          filters: *onlymaster
+          filters: *onlymain
           context:
             - repository-read
           requires:
             - build
       - deploy-artifact:
-          filters: *onlymaster
+          filters: *onlymain
           context:
             - generic-repository-write
           requires:
             - check-version
       - trigger-rundeck:
-          filters: *onlymaster
+          filters: *onlymain
           context:
             - rundeck
           requires:
