@@ -1,4 +1,4 @@
-import {BerryPriority, BerryState, GetBerriesRequestParams} from "@memberberry-npm/memberberry-api-angular";
+import {BerryPriority, BerryState, GetBerriesRequestParams} from "@rafaelostertag/memberberry-api-angular";
 import {ParamMap} from "@angular/router";
 
 const defaultPageSize: number = 10

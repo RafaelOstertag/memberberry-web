@@ -8,7 +8,7 @@ import {KeycloakAngularModule, KeycloakService} from "keycloak-angular";
 import {BerryListComponent} from './berry-list/berry-list.component';
 import {BerrySummaryComponent} from './berry-summary/berry-summary.component';
 import {FirstBerryComponent} from './first-berry/first-berry.component';
-import {BASE_PATH, MemberberryServerApiModule} from "@memberberry-npm/memberberry-api-angular";
+import {BASE_PATH, MemberberryServerApiModule} from "@rafaelostertag/memberberry-api-angular";
 import {environment} from "../environments/environment";
 import {HttpClientModule} from "@angular/common/http";
 import {NewBerryComponent} from './new-berry/new-berry.component';

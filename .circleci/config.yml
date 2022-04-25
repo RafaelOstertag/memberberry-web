@@ -1,0 +1,86 @@
+version: 2.1
+
+only-master: &onlymaster
+  branches:
+    only:
+      - master
+
+orbs:
+  c: rafaelostertag/common-orb@1.17.0
+
+jobs:
+  check-version:
+    executor: c/node14
+    steps:
+      - checkout
+      - run:
+          name: Check version
+          command: |
+            VERSION=$(jq -r .version package.json)
+            if curl -f  -u "${REPO_USERNAME}:${REPO_PASSWORD}" -I "https://rafaelostertag.jfrog.io/artifactory/local-generic/memberberry-web/memberberry-web-${VERSION}.tar.gz" > /dev/null
+            then
+              echo "### Version ${VERSION} already exists in repository" >&2
+              exit 1
+            else
+              echo "Version ${VERSION} not found in repository. Good!"
+            fi
+  deploy-artifact:
+    executor: c/node14
+    steps:
+      - checkout
+      - attach_workspace:
+          at: .
+      - run:
+          name: Create tar
+          command: |
+            VERSION=$(jq -r .version package.json)
+            tar -C dist/memberberry-web -cvzf memberberry-web-${VERSION}.tar.gz .
+      - run:
+          name: Upload artifact
+          command: |
+            VERSION=$(jq -r .version package.json)
+            curl -f -u "${REPO_USERNAME}:${REPO_PASSWORD}" --upload-file "memberberry-web-${VERSION}.tar.gz" "https://rafaelostertag.jfrog.io/artifactory/local-generic/memberberry-web/memberberry-web-${VERSION}.tar.gz"
+  trigger-rundeck:
+    executor: c/internal-infra
+    steps:
+      - checkout
+      - run:
+          name: Trigger rundeck
+          command: |
+            VERSION=$(jq -r .version package.json)
+            curl -f -H "X-Rundeck-Auth-Token: ${RUNDECK_API_TOKEN}" \
+              -H 'Content-Type: application/json' \
+              -d "{ \"options\" : { \"version\": \"${VERSION}\" }}" \
+              -X POST https://colossus.kruemel.home/rundeck/api/18/job/8156a78b-2908-4a96-8a2d-1d071c1e92c5/executions
+
+
+workflows:
+  build-and-deploy:
+    jobs:
+      - c/angular-build:
+          name: build
+          context:
+            - repository-read
+          post-steps:
+            - persist_to_workspace:
+                root: .
+                paths:
+                  - dist
+      - check-version:
+          filters: *onlymaster
+          context:
+            - repository-read
+          requires:
+            - build
+      - deploy-artifact:
+          filters: *onlymaster
+          context:
+            - generic-repository-write
+          requires:
+            - check-version
+      - trigger-rundeck:
+          filters: *onlymaster
+          context:
+            - rundeck
+          requires:
+            - deploy-artifact

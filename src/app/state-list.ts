@@ -1,4 +1,4 @@
-import {BerryState} from "@memberberry-npm/memberberry-api-angular";
+import {BerryState} from "@rafaelostertag/memberberry-api-angular";
 
 export const stateList: Array<BerryState> = [
   BerryState.Open,

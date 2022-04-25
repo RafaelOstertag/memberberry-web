@@ -1,4 +1,4 @@
-import {BerryPriority} from "@memberberry-npm/memberberry-api-angular";
+import {BerryPriority} from "@rafaelostertag/memberberry-api-angular";
 
 export const prioritiesList: Array<BerryPriority> = [
   BerryPriority.Medium,

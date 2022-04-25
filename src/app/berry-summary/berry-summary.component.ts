@@ -5,7 +5,7 @@ import {
   BerryWithId,
   GetBerriesRequestParams,
   UpdateBerryRequestParams
-} from "@memberberry-npm/memberberry-api-angular";
+} from "@rafaelostertag/memberberry-api-angular";
 
 @Component({
   selector: 'app-berry-summary',

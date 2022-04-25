@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {BerryV1Service, BerryWithId, GetBerriesRequestParams} from "@memberberry-npm/memberberry-api-angular";
+import {BerryV1Service, BerryWithId, GetBerriesRequestParams} from "@rafaelostertag/memberberry-api-angular";
 import {HttpErrorResponse, HttpResponse} from "@angular/common/http";
 import {ApiHeaders} from "../api-headers";
 import {ActivatedRoute, ParamMap} from "@angular/router";
