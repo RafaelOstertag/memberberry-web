@@ -5,7 +5,7 @@ import {
   BerryState,
   BerryV1Service,
   CreateBerryRequestParams
-} from "@memberberry-npm/memberberry-api-angular";
+} from "@rafaelostertag/memberberry-api-angular";
 import {HttpErrorResponse, HttpResponse} from "@angular/common/http";
 import {Router} from "@angular/router";
 import {prioritiesList} from "../priorities-list";

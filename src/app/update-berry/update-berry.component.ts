@@ -10,7 +10,7 @@ import {
   GetBerriesRequestParams,
   GetBerryRequestParams,
   UpdateBerryRequestParams
-} from "@memberberry-npm/memberberry-api-angular";
+} from "@rafaelostertag/memberberry-api-angular";
 import {Observable, switchMap} from "rxjs";
 import {HttpErrorResponse, HttpResponse} from "@angular/common/http";
 import {NgForm} from "@angular/forms";
